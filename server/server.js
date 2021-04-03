@@ -4,9 +4,10 @@ const path = require("path");
 const cookieSession = require("cookie-session");
 const csurf = require("csurf");
 
+// ================================ HELPERS ================================ //
 const succeed = (res) => res.json({ success: true });
-const fail = (res) => res.json({ success: false });
-const staticize = (file) => path.join(__dirname, "..", "client", file);
+const fail = (res, err) => res.json({ success: false, error: err });
+const clientDir = (file) => path.join(__dirname, "..", "client", file);
 
 // ================================ INIT ================================ //
 const app = express();
@@ -28,19 +29,23 @@ app.use(
 
 app.use(csurf());
 app.use(function (req, res, next) {
-    res.cookie("csrf_token", req.csrfToken());
+    res.cookie("mytoken", req.csrfToken());
     next();
 });
 
-app.use(express.static(staticize("public")));
+app.use(express.static(clientDir("public")));
 
 app.get("/welcome", ifLogged("in", "/"), (req, res) =>
-    res.sendFile(staticize("index.html"))
+    res.sendFile(clientDir("index.html"))
 );
 
-app.get("*", function (req, res) {
-    res.sendFile(staticize("index.html"));
+app.get("*", ifLogged("out", "/welcome"), function (req, res) {
+    res.sendFile(clientDir("index.html"));
 });
+
+app.post("/register", validate("register"), (req, res, next) =>
+    db.addUser(req.body)
+);
 
 app.listen(process.env.PORT || 3001, function () {
     console.log("I'm listening.");
@@ -53,4 +58,17 @@ function ifLogged(state, redirection) {
         if (test) return res.redirect(redirection);
         return next();
     };
+}
+
+function validate(what) {
+    if (what === "register")
+        return (req, res, next) => {
+            const required = ["first", "last", "email", "password"];
+            const invalid = required.filter((el) => !req.body[el]);
+            if (invalid.length === 0) return next();
+            return fail(
+                res,
+                `Please fill out required field(s): ${invalid.join(", ")}.`
+            );
+        };
 }
