@@ -1,7 +1,7 @@
 import { Component } from "react";
 import axios from "./axios";
 
-export default class Registration extends Component {
+export default class Login extends Component {
     constructor() {
         super();
         this.state = {

@@ -95,6 +95,19 @@ app.post(
             })
 );
 
+app.post("/password/reset/verify", validate("verify"), async (req, res) => {
+    const trueCode = await db.getCode(req.body.email);
+    if (req.body.code != trueCode) return fail(res, "Wrong verification code.");
+    req.body.password = await bcrypt.hash(req.body.password);
+    return db
+        .changePassword(req.body)
+        .then(() => succeed(res))
+        .catch((err) => {
+            console.log(err);
+            return fail(res, "Couldn't update password.");
+        });
+});
+
 app.use((req, res, next, err) => console.log(err));
 
 app.listen(process.env.PORT || 3001, function () {
@@ -112,8 +125,10 @@ function ifLogged(state, redirection) {
 
 function validate(what) {
     return (req, res, next) => {
-        const required = ["email", "password"];
+        let required = ["email"];
+        if (what === "register" || what === "login") required.push("password");
         if (what === "register") required.push("first", "last");
+        if (what === "verify") required = ["code", "password"];
         const invalid = required.filter((el) => !req.body[el]);
         // console.log("req.body:", req.body);
         // console.log("invalid: ", invalid);
