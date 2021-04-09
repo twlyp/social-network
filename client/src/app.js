@@ -1,8 +1,6 @@
 import { Component } from "react";
-// Use the CSURF axios instance ;)
-import axios from "./axios";
+import axios from "./utils/axios";
 
-// Those are from named exports, it will look differently if you have default exports ;)
 import Logo from "./logo.js";
 import ProfilePic from "./profile-pic.js";
 import Uploader from "./uploader.js";
@@ -14,17 +12,21 @@ export default class App extends Component {
         this.state = {
             user: {},
             uploaderVisible: false,
+            error: false,
         };
 
         this.showUploader = this.showUploader.bind(this);
     }
 
-    componentDidMount() {
+    async componentDidMount() {
         // 1. Fetch the user data when our App component mounts
-        axios.get("/user").then((res) => {
-            // 2. Update the state when you get the the user's data
-            // ...
-        });
+        const { data } = await axios.get("/user");
+        if (data.success) {
+            this.setState({ user: data.response });
+            console.log("this.state:", this.state);
+        } else {
+            this.setState({ error: data.error });
+        }
     }
 
     // Method to update the profilePic state after upload. To be passed down to <Uploader />
@@ -39,9 +41,8 @@ export default class App extends Component {
         });
     }
 
-    // You will also need a way to hide the uploader. Or you may want to change this to a toggle function
-    showUploader() {
-        this.setState({ uploaderVisible: true });
+    toggleUploader() {
+        this.setState({ uploaderVisible: !this.state.uploaderVisible });
     }
 
     render() {
@@ -49,20 +50,19 @@ export default class App extends Component {
             <section id={"app"}>
                 <Logo />
                 <ProfilePic
-                    firstName={this.state.user.firstName}
-                    lastName={this.state.user.lastName}
+                    first={this.state.user.first}
+                    last={this.state.user.last}
                     profilePicUrl={this.state.user.profilePicUrl}
                     // You may want to shorten the 3 lines above with: {...this.state.user}
 
-                    // This method is bound in the constructor, so we're good!
-                    showUploader={this.showUploader}
+                    toggleUploader={this.toggleUploader}
                 />
                 {this.state.uploaderVisible && (
                     // Uploader will also need to be passed a method to be able to close itself ;)
                     <Uploader
                         // Method 2 to preserve context: use an arrow function to capture the current context
                         setProfilePic={(profilePic) =>
-                            this.hideUploader(profilePic)
+                            this.setProfilePic(profilePic)
                         }
                     />
                 )}

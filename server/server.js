@@ -4,12 +4,15 @@ const path = require("path");
 const cookieSession = require("cookie-session");
 const csurf = require("csurf");
 const db = require("./db");
-const bcrypt = require("./bcrypt");
-const ses = require("./ses");
-const crs = require("./crypto-random");
+const bcrypt = require("./utils/bcrypt");
+const ses = require("./utils/ses");
+const crs = require("./utils/crypto-random");
+const multer = require("./utils/multer");
+const s3 = require("./utils/aws");
 
 // ================================ HELPERS ================================ //
-const succeed = (res) => res.json({ success: true });
+const succeed = (res, response) =>
+    res.json({ success: true, response: response });
 const fail = (res, err) => res.json({ success: false, error: err });
 const clientDir = (file) => path.join(__dirname, "..", "client", file);
 
@@ -45,9 +48,23 @@ app.get("/welcome", ifLogged("in", "/"), (req, res) =>
     res.sendFile(clientDir("index.html"))
 );
 
-app.get("*", ifLogged("out", "/welcome"), function (req, res) {
-    res.sendFile(clientDir("index.html"));
-});
+app.get("/user", ifLogged("out", "/welcome"), (req, res, next) =>
+    db
+        .getUserById(req.session.userId)
+        .then((results) => {
+            let user = results[0];
+            return res.json({
+                success: true,
+                first: user.first,
+                last: user.last,
+                pic: user.profile_pic,
+            });
+        })
+        .catch((err) => {
+            fail(res, "Couldn't find user profile.");
+            return next(err);
+        })
+);
 
 app.post("/register", validate("register"), async (req, res) => {
     req.body.password = await bcrypt.hash(req.body.password);
@@ -59,7 +76,7 @@ app.post("/register", validate("register"), async (req, res) => {
 });
 
 app.post("/login", validate("login"), async (req, res) => {
-    const userProfile = await db.getUserFromEmail(req.body.email);
+    const userProfile = await db.getUserByEmail(req.body.email);
     if (userProfile.length === 0) return fail(res, "Wrong e-mail or password.");
     const match = await bcrypt.compare(
         req.body.password,
@@ -74,7 +91,7 @@ app.post(
     "/password/reset/start",
     validate("email"),
     async (req, res, next) => {
-        const userProfile = await db.getUserFromEmail(req.body.email);
+        const userProfile = await db.getUserByEmail(req.body.email);
         if (userProfile.length === 0) return fail(res, "Wrong e-mail.");
         return next();
     },
@@ -106,6 +123,33 @@ app.post("/password/reset/verify", validate("verify"), async (req, res) => {
             console.log(err);
             return fail(res, "Couldn't update password.");
         });
+});
+
+app.post(
+    "/profile-pic",
+    ifLogged("out", "/welcome"),
+    multer.upload.single("file"),
+    (req, res, next) => (!req.file ? fail(res, "Couldn't save file.") : next()),
+    (req, res, next) =>
+        s3.upload.catch((err) => {
+            fail(res, "Couldn't upload file to server.");
+            next(err);
+        }),
+    (req, res, next) =>
+        db
+            .addProfilePic(
+                `https://s3.amazonaws.com/cardamom-social/${req.file.filename}`,
+                req.session.userId
+            )
+            .then(() => succeed(res))
+            .catch((err) => {
+                fail(res, "Couldn't save entry into database.");
+                return next(err);
+            })
+);
+
+app.get("*", ifLogged("out", "/welcome"), function (req, res) {
+    res.sendFile(clientDir("index.html"));
 });
 
 app.use((req, res, next, err) => console.log(err));

@@ -14,7 +14,7 @@ module.exports = {
                 [first, last, email, password]
             )
             .then((res) => res.rows),
-    getUserFromEmail: (email) =>
+    getUserByEmail: (email) =>
         db
             .query(
                 `SELECT * FROM users
@@ -22,6 +22,21 @@ module.exports = {
                 [email]
             )
             .then((res) => res.rows),
+    getUserById: (id) =>
+        db
+            .query(
+                `SELECT * FROM users
+                WHERE id = $1`,
+                [id]
+            )
+            .then((res) => res.rows),
+    addProfilePic: (url, id) =>
+        db.query(
+            `UPDATE users
+                SET profile_pic = $1
+                WHERE id = $2`,
+            [url, id]
+        ),
     changePassword: ({ email, password }) =>
         db.query(
             `UPDATE users

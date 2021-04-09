@@ -1,5 +1,5 @@
 import { Component } from "react";
-import axios from "./axios";
+import axios from "./utils/axios";
 
 export default class Registration extends Component {
     constructor() {
