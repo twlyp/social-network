@@ -15,34 +15,35 @@ export default class App extends Component {
             error: false,
         };
 
-        this.showUploader = this.showUploader.bind(this);
+        this.toggleUploader = this.toggleUploader.bind(this);
     }
 
     async componentDidMount() {
-        // 1. Fetch the user data when our App component mounts
         const { data } = await axios.get("/user");
         if (data.success) {
-            this.setState({ user: data.response });
-            console.log("this.state:", this.state);
+            this.setState({ user: data.user });
         } else {
             this.setState({ error: data.error });
         }
     }
 
-    // Method to update the profilePic state after upload. To be passed down to <Uploader />
     setProfilePic(profilePic) {
         this.setState((prevState) => {
             return {
                 user: {
                     ...prevState.user,
-                    profilePic,
+                    url: profilePic,
                 },
             };
         });
     }
 
     toggleUploader() {
-        this.setState({ uploaderVisible: !this.state.uploaderVisible });
+        this.setState((prevState) => {
+            return {
+                uploaderVisible: !prevState.uploaderVisible,
+            };
+        });
     }
 
     render() {
@@ -50,17 +51,12 @@ export default class App extends Component {
             <section id={"app"}>
                 <Logo />
                 <ProfilePic
-                    first={this.state.user.first}
-                    last={this.state.user.last}
-                    profilePicUrl={this.state.user.profilePicUrl}
-                    // You may want to shorten the 3 lines above with: {...this.state.user}
-
+                    {...this.state.user}
                     toggleUploader={this.toggleUploader}
                 />
                 {this.state.uploaderVisible && (
-                    // Uploader will also need to be passed a method to be able to close itself ;)
                     <Uploader
-                        // Method 2 to preserve context: use an arrow function to capture the current context
+                        toggleUploader={this.toggleUploader}
                         setProfilePic={(profilePic) =>
                             this.setProfilePic(profilePic)
                         }

@@ -19,6 +19,9 @@ const clientDir = (file) => path.join(__dirname, "..", "client", file);
 // ================================ INIT ================================ //
 const app = express();
 
+const morgan = require("morgan");
+app.use(morgan("tiny"));
+
 app.use(compression());
 
 app.use(
@@ -50,20 +53,16 @@ app.get("/welcome", ifLogged("in", "/"), (req, res) =>
 
 app.get("/user", ifLogged("out", "/welcome"), (req, res, next) =>
     db
-        .getUserById(req.session.userId)
-        .then((results) => {
-            let user = results[0];
+        .getUserProfile(req.session.userId)
+        .then((user) => {
             return res.json({
                 success: true,
-                first: user.first,
-                last: user.last,
-                pic: user.profile_pic,
+                user,
             });
         })
-        .catch((err) => {
-            fail(res, "Couldn't find user profile.");
-            return next(err);
-        })
+        .catch((err) =>
+            next({ caught: true, myCode: "db_notfound", originalError: err })
+        )
 );
 
 app.post("/register", validate("register"), async (req, res) => {
@@ -130,29 +129,33 @@ app.post(
     ifLogged("out", "/welcome"),
     multer.upload.single("file"),
     (req, res, next) => (!req.file ? fail(res, "Couldn't save file.") : next()),
-    (req, res, next) =>
-        s3.upload.catch((err) => {
-            fail(res, "Couldn't upload file to server.");
-            next(err);
-        }),
+    s3.upload,
     (req, res, next) =>
         db
             .addProfilePic(
-                `https://s3.amazonaws.com/cardamom-social/${req.file.filename}`,
+                `https://cardamom-social.s3.amazonaws.com/${req.file.filename}`,
                 req.session.userId
             )
-            .then(() => succeed(res))
-            .catch((err) => {
-                fail(res, "Couldn't save entry into database.");
-                return next(err);
-            })
+            .then((url) => res.json({ success: true, url }))
+            .catch((err) =>
+                next({ caught: true, myCode: "db_noupdate", orginalError: err })
+            )
 );
 
 app.get("*", ifLogged("out", "/welcome"), function (req, res) {
     res.sendFile(clientDir("index.html"));
 });
 
-app.use((req, res, next, err) => console.log(err));
+app.use((err, req, res, next) => {
+    const ERRORS = {
+        db_notfound: "Couldn't find entry in the database.",
+        db_noupdate: "Couldn't update entry in the database.",
+    };
+    const { name, stack } = err.caught ? err.originalError : err;
+    console.log(`${name}: ${stack}`);
+    if (err.caught)
+        return res.json({ success: false, error: ERRORS["db_notfound"] });
+});
 
 app.listen(process.env.PORT || 3001, function () {
     console.log("I'm listening.");

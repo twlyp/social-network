@@ -14,15 +14,14 @@ const s3 = new aws.S3({
 exports.upload = (req, res, next) => {
     const { filename, mimetype, size, path } = req.file;
 
-    return s3
-        .putObject({
-            Bucket: "cardamom-social",
-            ACL: "public-read",
-            Key: filename,
-            Body: fs.createReadStream(path),
-            ContentType: mimetype,
-            ContentLength: size,
-        })
+    s3.putObject({
+        Bucket: "cardamom-social",
+        ACL: "public-read",
+        Key: filename,
+        Body: fs.createReadStream(path),
+        ContentType: mimetype,
+        ContentLength: size,
+    })
         .promise()
         .then(() => {
             fs.unlink(path, () => {});

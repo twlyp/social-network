@@ -22,21 +22,24 @@ module.exports = {
                 [email]
             )
             .then((res) => res.rows),
-    getUserById: (id) =>
+    getUserProfile: (id) =>
         db
             .query(
-                `SELECT * FROM users
-                WHERE id = $1`,
+                `SELECT id, first, last, profile_pic AS url
+                FROM users WHERE id = $1`,
                 [id]
             )
-            .then((res) => res.rows),
+            .then((res) => res.rows[0]),
     addProfilePic: (url, id) =>
-        db.query(
-            `UPDATE users
+        db
+            .query(
+                `UPDATE users
                 SET profile_pic = $1
-                WHERE id = $2`,
-            [url, id]
-        ),
+                WHERE id = $2
+                RETURNING profile_pic AS url`,
+                [url, id]
+            )
+            .then((result) => result.rows[0].url),
     changePassword: ({ email, password }) =>
         db.query(
             `UPDATE users
