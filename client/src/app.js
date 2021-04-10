@@ -1,9 +1,11 @@
 import { Component } from "react";
 import axios from "./utils/axios";
 
-import Logo from "./logo.js";
-import ProfilePic from "./profile-pic.js";
-import Uploader from "./uploader.js";
+import Logo from "./logo";
+import Profile from "./profile";
+import BioEditor from "./bio-editor";
+import ProfilePic from "./profile-pic";
+import Uploader from "./uploader";
 
 export default class App extends Component {
     constructor(props) {
@@ -16,6 +18,8 @@ export default class App extends Component {
         };
 
         this.toggleUploader = this.toggleUploader.bind(this);
+        this.setBio = this.setBio.bind(this);
+        this.setProfilePic = this.setProfilePic.bind(this);
     }
 
     async componentDidMount() {
@@ -38,7 +42,19 @@ export default class App extends Component {
         });
     }
 
-    toggleUploader() {
+    setBio(bio) {
+        this.setState((prevState) => {
+            return {
+                user: {
+                    ...prevState.user,
+                    bio,
+                },
+            };
+        });
+    }
+
+    toggleUploader(e) {
+        e && e.stopPropagation();
         this.setState((prevState) => {
             return {
                 uploaderVisible: !prevState.uploaderVisible,
@@ -50,10 +66,18 @@ export default class App extends Component {
         return (
             <section id={"app"}>
                 <Logo />
-                <ProfilePic
-                    {...this.state.user}
-                    toggleUploader={this.toggleUploader}
-                />
+                <Profile
+                    first={this.state.user.first}
+                    last={this.state.user.last}
+                >
+                    <ProfilePic
+                        first={this.state.user.first}
+                        last={this.state.user.last}
+                        url={this.state.user.url}
+                        toggleUploader={this.toggleUploader}
+                    />
+                    <BioEditor bio={this.state.user.bio} setBio={this.setBio} />
+                </Profile>
                 {this.state.uploaderVisible && (
                     <Uploader
                         toggleUploader={this.toggleUploader}

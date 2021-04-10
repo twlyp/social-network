@@ -8,6 +8,10 @@ export default class Uploader extends Component {
         this.handleChange = this.handleChange.bind(this);
     }
 
+    setStateAsync(newState) {
+        return new Promise((resolve) => this.setState(newState, resolve));
+    }
+
     async handleChange(e) {
         this.setState({ inProgress: true });
         const formdata = new FormData();
@@ -24,23 +28,22 @@ export default class Uploader extends Component {
 
     render() {
         return (
-            <div className="uploader modal">
-                {!this.inProgress && (
-                    <div className="modal-message">
-                        <p>Please upload a new profile picture.</p>
-                        <input
-                            type="file"
-                            name="file"
-                            onChange={this.handleChange}
-                        />
-                    </div>
-                )}
-
-                {this.inProgress && (
-                    <div className="modal-message">
+            <div className="uploader modal" onClick={this.props.toggleUploader}>
+                <div className="modal-message">
+                    {this.state.inProgress ? (
                         <p>Uploading...</p>
-                    </div>
-                )}
+                    ) : (
+                        <>
+                            <p>Please upload a new profile picture.</p>
+                            <input
+                                type="file"
+                                name="file"
+                                onChange={this.handleChange}
+                                onClick={(e) => e.stopPropagation()}
+                            />
+                        </>
+                    )}
+                </div>
             </div>
         );
     }

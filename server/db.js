@@ -25,7 +25,7 @@ module.exports = {
     getUserProfile: (id) =>
         db
             .query(
-                `SELECT id, first, last, profile_pic AS url
+                `SELECT id, first, last, profile_pic AS url, bio
                 FROM users WHERE id = $1`,
                 [id]
             )
@@ -40,6 +40,13 @@ module.exports = {
                 [url, id]
             )
             .then((result) => result.rows[0].url),
+    addBio: (bio, id) =>
+        db.query(
+            `UPDATE users
+                SET bio = $1
+                WHERE id = $2`,
+            [bio, id]
+        ),
     changePassword: ({ email, password }) =>
         db.query(
             `UPDATE users

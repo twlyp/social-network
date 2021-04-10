@@ -142,6 +142,15 @@ app.post(
             )
 );
 
+app.post("/bio", ifLogged("out", "/welcome"), (req, res, next) =>
+    db
+        .addBio(req.body.draft, req.session.userId)
+        .then(() => res.json({ success: true }))
+        .catch((err) =>
+            next({ caught: true, myCode: "db_noupdate", originalError: err })
+        )
+);
+
 app.get("*", ifLogged("out", "/welcome"), function (req, res) {
     res.sendFile(clientDir("index.html"));
 });
