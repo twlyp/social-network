@@ -34,7 +34,7 @@ export default class BioEditor extends Component {
 
     render() {
         return (
-            <div id={"bio-editor"}>
+            <div className="bio">
                 <h3>Your bio:</h3>
                 {this.state.isEditing ? (
                     <>
@@ -46,7 +46,7 @@ export default class BioEditor extends Component {
                     </>
                 ) : (
                     <>
-                        <p className="bio">{this.props.bio}</p>
+                        <p className="bio-text">{this.props.bio}</p>
                         <button onClick={this.edit}>
                             {this.props.bio ? "Edit" : "Add"}
                         </button>

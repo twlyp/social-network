@@ -65,6 +65,28 @@ app.get("/user", ifLogged("out", "/welcome"), (req, res, next) =>
         )
 );
 
+app.get("/user/:id.json", (req, res, next) =>
+    db
+        .getUserProfile(req.params.id)
+        .then((user) => {
+            return res.json({
+                success: true,
+                user,
+            });
+        })
+        .catch((err) =>
+            next({ caught: true, myCode: "db_notfound", originalError: err })
+        )
+);
+
+app.get("/users", (req, res, next) => {
+    console.log("req.query:", req.query);
+    return res.json({
+        success: true,
+        users: [{ first: "cocca", last: "bella", bio: "cirippi" }],
+    });
+});
+
 app.post("/register", validate("register"), async (req, res) => {
     req.body.password = await bcrypt.hash(req.body.password);
     const result = await db.addUser(req.body);
@@ -155,7 +177,7 @@ app.get("*", ifLogged("out", "/welcome"), function (req, res) {
     res.sendFile(clientDir("index.html"));
 });
 
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
     const ERRORS = {
         db_notfound: "Couldn't find entry in the database.",
         db_noupdate: "Couldn't update entry in the database.",
