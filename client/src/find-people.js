@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import axios from "./utils/axios";
 
 export default function findPeople() {
@@ -27,14 +28,17 @@ export default function findPeople() {
     }, [query]);
 
     return (
-        <div>
-            <h1>incremental search</h1>
+        <div className="search-bar">
             <input onChange={handleChange}></input>
 
             <ul className="search-results">
-                {users.map((user, i) => {
-                    return <li key={i}>{user}</li>;
-                })}
+                {users.map((user, i) => (
+                    <li key={i}>
+                        <Link to={`/user/${user.id}`}>
+                            {user.first + " " + user.last}
+                        </Link>
+                    </li>
+                ))}
             </ul>
         </div>
     );

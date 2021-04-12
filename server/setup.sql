@@ -1,4 +1,4 @@
--- DROP TABLE IF EXISTS users;
+-- DROP TABLE IF EXISTS users CASCADE;
 
 -- CREATE TABLE users(
 --     id SERIAL PRIMARY KEY,
@@ -19,3 +19,12 @@
 --     code VARCHAR(255) NOT NULL,
 --     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 -- );
+
+-- DROP TABLE IF EXISTS friendships;
+
+-- CREATE TABLE friendships( 
+--   id SERIAL PRIMARY KEY, 
+--   sender INT REFERENCES users(id) ON DELETE CASCADE NOT NULL, 
+--   recipient INT REFERENCES users(id) ON DELETE CASCADE NOT NULL, 
+--   accepted BOOLEAN DEFAULT false);
+

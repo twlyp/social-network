@@ -8,6 +8,7 @@ import BioEditor from "./bio-editor";
 import ProfilePic from "./profile-pic";
 import Uploader from "./uploader";
 import OtherProfile from "./other-profile";
+import FindPeople from "./find-people";
 
 export default class App extends Component {
     constructor(props) {
@@ -69,6 +70,8 @@ export default class App extends Component {
             <section id={"app"}>
                 <Logo />
                 <Router>
+                    <FindPeople />
+
                     <div className="profile">
                         <Route exact path="/">
                             <Profile

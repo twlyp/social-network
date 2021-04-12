@@ -42,12 +42,14 @@ export default class BioEditor extends Component {
                             onInput={this.handleInput}
                             defaultValue={this.props.bio}
                         ></textarea>
-                        <button onClick={this.save}>Save</button>
+                        <button onClick={this.save} id="save">
+                            Save
+                        </button>
                     </>
                 ) : (
                     <>
                         <p className="bio-text">{this.props.bio}</p>
-                        <button onClick={this.edit}>
+                        <button onClick={this.edit} id="edit">
                             {this.props.bio ? "Edit" : "Add"}
                         </button>
                     </>

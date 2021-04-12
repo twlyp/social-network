@@ -51,6 +51,7 @@ app.get("/welcome", ifLogged("in", "/"), (req, res) =>
     res.sendFile(clientDir("index.html"))
 );
 
+// =============== USER PROFILES =============== //
 app.get("/user", ifLogged("out", "/welcome"), (req, res, next) =>
     db
         .getUserProfile(req.session.userId)
@@ -79,14 +80,17 @@ app.get("/user/:id.json", (req, res, next) =>
         )
 );
 
+// =============== USER SEARCH =============== //
 app.get("/users", (req, res, next) => {
-    console.log("req.query:", req.query);
-    return res.json({
-        success: true,
-        users: [{ first: "cocca", last: "bella", bio: "cirippi" }],
-    });
+    const query = req.query.q ? db.searchUsers(req.query.q) : db.newestUsers();
+    return query
+        .then((users) => res.json({ success: true, users }))
+        .catch((err) =>
+            next({ caught: true, myCode: "db_notfound", originalError: err })
+        );
 });
 
+// =============== ACCOUNT OPERATIONS =============== //
 app.post("/register", validate("register"), async (req, res) => {
     req.body.password = await bcrypt.hash(req.body.password);
     const result = await db.addUser(req.body);
@@ -146,6 +150,7 @@ app.post("/password/reset/verify", validate("verify"), async (req, res) => {
         });
 });
 
+// =============== PROFILE EDIT =============== //
 app.post(
     "/profile-pic",
     ifLogged("out", "/welcome"),
@@ -173,19 +178,58 @@ app.post("/bio", ifLogged("out", "/welcome"), (req, res, next) =>
         )
 );
 
+// =============== FRIENDSHIPS =============== //
+app.route("/friendship/:id")
+    .get(ifLogged("out", "/welcome"), async (req, res, next) => {
+        const ids = { sender: req.session.userId, recipient: req.params.id };
+
+        const [result] = await db.checkFriendship(ids);
+        let status;
+        if (!result) {
+            status = "none";
+        } else if (result.accepted) {
+            status = "friends";
+        } else if (result.sender === ids.sender) {
+            status = "waiting";
+        } else {
+            status = "open";
+        }
+        return res.json({ success: true, status });
+    })
+    .post(ifLogged("out", "/welcome"), async (req, res, next) => {
+        const ids = { sender: req.session.userId, recipient: req.params.id };
+        const [result] = await db.checkFriendship(ids);
+        let operation;
+        if (!result) {
+            operation = db.askFriendship(ids);
+        } else if (result.accepted || result.sender === ids.sender) {
+            operation = db.deleteFriendship(ids);
+        } else {
+            operation = db.acceptFriendship(ids);
+        }
+        return operation
+            .then((status) => res.json({ success: true, status }))
+            .catch((err) =>
+                next({ caught: true, myCode: "db_error", originalError: err })
+            );
+    });
+
+// =============== GENERAL =============== //
 app.get("*", ifLogged("out", "/welcome"), function (req, res) {
     res.sendFile(clientDir("index.html"));
 });
 
 app.use((err, req, res) => {
     const ERRORS = {
+        db_error: "Database error.",
         db_notfound: "Couldn't find entry in the database.",
         db_noupdate: "Couldn't update entry in the database.",
+        bad_request: "Invalid request data.",
     };
     const { name, stack } = err.caught ? err.originalError : err;
     console.log(`${name}: ${stack}`);
     if (err.caught)
-        return res.json({ success: false, error: ERRORS["db_notfound"] });
+        return res.json({ success: false, error: ERRORS[err.myCode] });
 });
 
 app.listen(process.env.PORT || 3001, function () {

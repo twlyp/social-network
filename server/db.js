@@ -30,6 +30,29 @@ module.exports = {
                 [id]
             )
             .then((res) => res.rows[0]),
+
+    // user searches
+    newestUsers: () =>
+        db
+            .query(
+                `SELECT id, first, last
+                FROM users
+                ORDER BY id DESC
+                LIMIT 3`
+            )
+            .then((res) => res.rows),
+    searchUsers: (str) =>
+        db
+            .query(
+                `SELECT id, first, last
+                FROM users
+                WHERE first || ' ' || last ILIKE $1
+                LIMIT 3`,
+                ["%" + str + "%"]
+            )
+            .then((res) => res.rows),
+
+    // add details stuff
     addProfilePic: (url, id) =>
         db
             .query(
@@ -47,6 +70,46 @@ module.exports = {
                 WHERE id = $2`,
             [bio, id]
         ),
+
+    // friendship stuff
+    checkFriendship: ({ sender, recipient }) =>
+        db
+            .query(
+                `SELECT * FROM friendships
+                WHERE (recipient = $1 AND sender = $2)
+                OR (recipient = $2 AND sender = $1)`,
+                [sender, recipient]
+            )
+            .then((result) => result.rows),
+    askFriendship: ({ sender, recipient }) =>
+        db
+            .query(
+                `INSERT INTO friendships
+                (sender, recipient, accepted)
+                VALUES $1, $2, false`,
+                [sender, recipient]
+            )
+            .then(() => "waiting"),
+    deleteFriendship: ({ sender, recipient }) =>
+        db
+            .query(
+                `DELETE FROM friendships
+                WHERE (recipient = $1 AND sender = $2)
+                OR (recipient = $2 AND sender = $1)`,
+                [sender, recipient]
+            )
+            .then(() => "none"),
+    acceptFriendship: ({ sender, recipient }) =>
+        db
+            .query(
+                `UPDATE friendships
+                SET accepted = true
+                WHERE (recipient = $1 AND sender = $2)`,
+                [sender, recipient]
+            )
+            .then(() => "friends"),
+
+    // change password stuff
     changePassword: ({ email, password }) =>
         db.query(
             `UPDATE users
