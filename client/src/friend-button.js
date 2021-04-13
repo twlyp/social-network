@@ -17,8 +17,13 @@ export default function FriendButton(props) {
         return data.success ? setStatus(data.status) : setError(data.error);
     }
 
-    async function clickHandler() {
-        const { data } = await axios.post(`/friendship/${props.target}`);
+    async function clickHandler(e) {
+        setError("");
+        const { data } = await axios.post(
+            `/friendship/${props.target}${
+                e.target.id === "reject" && "/reject"
+            }`
+        );
         return data.success ? setStatus(data.status) : setError(data.error);
     }
 
@@ -29,6 +34,11 @@ export default function FriendButton(props) {
     return (
         <>
             <button onClick={clickHandler}>{statuses[status]}</button>
+            {status === "open" && (
+                <button onClick={clickHandler} id="reject">
+                    Reject request
+                </button>
+            )}
         </>
     );
 }

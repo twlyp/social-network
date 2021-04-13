@@ -179,7 +179,7 @@ app.post("/bio", ifLogged("out", "/welcome"), (req, res, next) =>
 );
 
 // =============== FRIENDSHIPS =============== //
-app.route("/friendship/:id")
+app.route("/friendship/:id/:reject?")
     .get(ifLogged("out", "/welcome"), async (req, res, next) => {
         const ids = { sender: req.session.userId, recipient: req.params.id };
 
@@ -202,13 +202,19 @@ app.route("/friendship/:id")
         let operation;
         if (!result) {
             operation = db.askFriendship(ids);
-        } else if (result.accepted || result.sender === ids.sender) {
+        } else if (
+            result.accepted ||
+            result.sender === ids.sender ||
+            req.params.reject === "reject"
+        ) {
             operation = db.deleteFriendship(ids);
         } else {
             operation = db.acceptFriendship(ids);
         }
         return operation
-            .then((status) => res.json({ success: true, status }))
+            .then((status) => {
+                return res.json({ success: true, status });
+            })
             .catch((err) =>
                 next({ caught: true, myCode: "db_error", originalError: err })
             );
@@ -219,15 +225,15 @@ app.get("*", ifLogged("out", "/welcome"), function (req, res) {
     res.sendFile(clientDir("index.html"));
 });
 
-app.use((err, req, res) => {
+app.use((err, req, res, next) => {
     const ERRORS = {
         db_error: "Database error.",
         db_notfound: "Couldn't find entry in the database.",
         db_noupdate: "Couldn't update entry in the database.",
         bad_request: "Invalid request data.",
     };
-    const { name, stack } = err.caught ? err.originalError : err;
-    console.log(`${name}: ${stack}`);
+    const { stack } = err.caught ? err.originalError : err;
+    console.log(stack);
     if (err.caught)
         return res.json({ success: false, error: ERRORS[err.myCode] });
 });
@@ -252,8 +258,6 @@ function validate(what) {
         if (what === "register") required.push("first", "last");
         if (what === "verify") required = ["code", "password"];
         const invalid = required.filter((el) => !req.body[el]);
-        // console.log("req.body:", req.body);
-        // console.log("invalid: ", invalid);
         if (invalid.length === 0) return next();
         return fail(
             res,

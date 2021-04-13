@@ -86,7 +86,7 @@ module.exports = {
             .query(
                 `INSERT INTO friendships
                 (sender, recipient, accepted)
-                VALUES $1, $2, false`,
+                VALUES ($1, $2, false)`,
                 [sender, recipient]
             )
             .then(() => "waiting"),
