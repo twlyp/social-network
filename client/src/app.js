@@ -4,11 +4,10 @@ import axios from "./utils/axios";
 
 import Logo from "./logo";
 import Profile from "./profile";
-import BioEditor from "./bio-editor";
-import ProfilePic from "./profile-pic";
 import Uploader from "./uploader";
 import OtherProfile from "./other-profile";
 import FindPeople from "./find-people";
+import Friends from "./friends";
 
 export default class App extends Component {
     constructor(props) {
@@ -72,23 +71,19 @@ export default class App extends Component {
                 <Router>
                     <FindPeople />
 
+                    <Link to="/">Profile</Link>
+                    <Link to="/friends">Friends</Link>
+
                     <div className="profile">
                         <Route exact path="/">
                             <Profile
                                 first={this.state.user.first}
                                 last={this.state.user.last}
-                            >
-                                <ProfilePic
-                                    first={this.state.user.first}
-                                    last={this.state.user.last}
-                                    url={this.state.user.url}
-                                    toggleUploader={this.toggleUploader}
-                                />
-                                <BioEditor
-                                    bio={this.state.user.bio}
-                                    setBio={this.setBio}
-                                />
-                            </Profile>
+                                url={this.state.user.url}
+                                toggleUploader={this.toggleUploader}
+                                bio={this.state.user.bio}
+                                setBio={this.setBio}
+                            />
                         </Route>
                         <Route
                             path="/user/:id"
@@ -100,6 +95,7 @@ export default class App extends Component {
                                 />
                             )}
                         />
+                        <Route path="/friends" component={Friends} />
                     </div>
                 </Router>
 

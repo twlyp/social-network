@@ -108,6 +108,18 @@ module.exports = {
                 [sender, recipient]
             )
             .then(() => "friends"),
+    getFriends: (id) =>
+        db
+            .query(
+                `SELECT users.id, first, last, profile_pic AS url, accepted
+                    FROM friendships
+                    JOIN users
+                    ON (accepted = false AND recipient = $1 AND sender = users.id)
+                    OR (accepted = true AND recipient = $1 AND sender = users.id)
+                    OR (accepted = true AND sender = $1 AND recipient = users.id)`,
+                [id]
+            )
+            .then((result) => result.rows),
 
     // change password stuff
     changePassword: ({ email, password }) =>

@@ -179,7 +179,7 @@ app.post("/bio", ifLogged("out", "/welcome"), (req, res, next) =>
 );
 
 // =============== FRIENDSHIPS =============== //
-app.route("/friendship/:id/:reject?")
+app.route("/friendship/:id/:action?")
     .get(ifLogged("out", "/welcome"), async (req, res, next) => {
         const ids = { sender: req.session.userId, recipient: req.params.id };
 
@@ -198,27 +198,32 @@ app.route("/friendship/:id/:reject?")
     })
     .post(ifLogged("out", "/welcome"), async (req, res, next) => {
         const ids = { sender: req.session.userId, recipient: req.params.id };
-        const [result] = await db.checkFriendship(ids);
-        let operation;
-        if (!result) {
-            operation = db.askFriendship(ids);
-        } else if (
-            result.accepted ||
-            result.sender === ids.sender ||
-            req.params.reject === "reject"
-        ) {
-            operation = db.deleteFriendship(ids);
-        } else {
-            operation = db.acceptFriendship(ids);
-        }
-        return operation
-            .then((status) => {
-                return res.json({ success: true, status });
-            })
-            .catch((err) =>
-                next({ caught: true, myCode: "db_error", originalError: err })
-            );
+        const actions = ["ask", "delete", "accept"];
+        let action = req.params.action;
+        if (actions.includes(action))
+            return db[`${action}Friendship`](ids)
+                .then((status) => {
+                    return res.json({ success: true, status });
+                })
+                .catch((err) =>
+                    next({
+                        caught: true,
+                        myCode: "db_error",
+                        originalError: err,
+                    })
+                );
+        return next({
+            caught: true,
+            myCode: "bad_command",
+            originalError: { stack: "my error" },
+        });
     });
+
+app.get("/friends-wannabes", ifLogged("out", "/welcome"), (req, res) =>
+    db.getFriends(req.session.userId).then((friends) => {
+        return res.json({ success: true, friends });
+    })
+);
 
 // =============== GENERAL =============== //
 app.get("*", ifLogged("out", "/welcome"), function (req, res) {
@@ -231,11 +236,10 @@ app.use((err, req, res, next) => {
         db_notfound: "Couldn't find entry in the database.",
         db_noupdate: "Couldn't update entry in the database.",
         bad_request: "Invalid request data.",
+        bad_command: "Invalid action.",
     };
-    const { stack } = err.caught ? err.originalError : err;
-    console.log(stack);
-    if (err.caught)
-        return res.json({ success: false, error: ERRORS[err.myCode] });
+    const message = err.caught ? ERRORS[err.myCode] : err.stack;
+    return res.json({ success: false, error: message });
 });
 
 app.listen(process.env.PORT || 3001, function () {
@@ -245,7 +249,7 @@ app.listen(process.env.PORT || 3001, function () {
 // ================================ MIDDLEWARE ================================ //
 function ifLogged(state, redirection) {
     return (req, res, next) => {
-        const test = state == "in" ? req.session.userId : !req.session.userId;
+        const test = state == "in" ? !!req.session.userId : !req.session.userId;
         if (test) return res.redirect(redirection);
         return next();
     };
