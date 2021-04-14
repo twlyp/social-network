@@ -64,6 +64,11 @@ export default class App extends Component {
         });
     }
 
+    logout() {
+        axios.post("/logout");
+        location.replace("/welcome");
+    }
+
     render() {
         return (
             <section id={"app"}>
@@ -73,6 +78,8 @@ export default class App extends Component {
 
                     <Link to="/">Profile</Link>
                     <Link to="/friends">Friends</Link>
+
+                    <button onClick={this.logout}>Logout</button>
 
                     <div className="profile">
                         <Route exact path="/">

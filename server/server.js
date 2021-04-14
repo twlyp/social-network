@@ -112,6 +112,11 @@ app.post("/login", validate("login"), async (req, res) => {
     return succeed(res);
 });
 
+app.post("/logout", (req, res) => {
+    req.session = null;
+    res.json({ success: true });
+});
+
 app.post(
     "/password/reset/start",
     validate("email"),
