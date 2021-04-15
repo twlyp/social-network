@@ -3,7 +3,7 @@ const compression = require("compression");
 const path = require("path");
 const cookieSession = require("cookie-session");
 const csurf = require("csurf");
-const db = require("./db");
+const db = require("./utils/db");
 const bcrypt = require("./utils/bcrypt");
 const ses = require("./utils/ses");
 const crs = require("./utils/crypto-random");
@@ -18,6 +18,11 @@ const clientDir = (file) => path.join(__dirname, "..", "client", file);
 
 // ================================ INIT ================================ //
 const app = express();
+const server = require("http").Server(app);
+const io = require("socket.io")(server, {
+    allowRequest: (req, callback) =>
+        callback(null, req.headers.referer.startsWith("http://localhost:3000")),
+});
 
 const morgan = require("morgan");
 app.use(morgan("tiny"));
@@ -45,22 +50,22 @@ app.use(function (req, res, next) {
     next();
 });
 
-app.use(express.static(clientDir("public")));
+app.use(express.static(path.join(__dirname, "..", "client", "index.html")));
 
 app.get("/welcome", ifLogged("in", "/"), (req, res) =>
-    res.sendFile(clientDir("index.html"))
+    res.sendFile(path.join(__dirname, "..", "client", "index.html"))
 );
 
 // =============== USER PROFILES =============== //
 app.get("/user", ifLogged("out", "/welcome"), (req, res, next) =>
     db
         .getUserProfile(req.session.userId)
-        .then((user) => {
-            return res.json({
+        .then((user) =>
+            res.json({
                 success: true,
                 user,
-            });
-        })
+            })
+        )
         .catch((err) =>
             next({ caught: true, myCode: "db_notfound", originalError: err })
         )
@@ -114,7 +119,7 @@ app.post("/login", validate("login"), async (req, res) => {
 
 app.post("/logout", (req, res) => {
     req.session = null;
-    res.json({ success: true });
+    return res.json({ success: true });
 });
 
 app.post(
@@ -247,8 +252,24 @@ app.use((err, req, res, next) => {
     return res.json({ success: false, error: message });
 });
 
-app.listen(process.env.PORT || 3001, function () {
+server.listen(process.env.PORT || 3001, function () {
     console.log("I'm listening.");
+});
+
+io.on("connection", (socket) => {
+    console.log(`A socket with the id ${socket.id} just CONNECTED`);
+    socket.emit("welcome", {
+        msg: "It is nice to see you.",
+    });
+    io.emit("newUser", {
+        data: "a new user joined",
+    });
+    socket.on("yo", (data) => {
+        console.log(data);
+    });
+    socket.on("disconnect", () => {
+        console.log(`A socket with the id ${socket.id} just DISCONNECTED`);
+    });
 });
 
 // ================================ MIDDLEWARE ================================ //
