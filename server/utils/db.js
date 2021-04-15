@@ -13,7 +13,7 @@ module.exports = {
                 RETURNING id`,
                 [first, last, email, password]
             )
-            .then((res) => res.rows),
+            .then((res) => res.rows[0]),
     getUserByEmail: (email) =>
         db
             .query(
@@ -21,7 +21,7 @@ module.exports = {
                 WHERE email = $1`,
                 [email]
             )
-            .then((res) => res.rows),
+            .then((res) => res.rows[0]),
     getUserProfile: (id) =>
         db
             .query(
@@ -41,14 +41,14 @@ module.exports = {
                 LIMIT 3`
             )
             .then((res) => res.rows),
-    searchUsers: (str) =>
+    searchUsers: (search) =>
         db
             .query(
                 `SELECT id, first, last
                 FROM users
                 WHERE first || ' ' || last ILIKE $1
                 LIMIT 3`,
-                ["%" + str + "%"]
+                ["%" + search + "%"]
             )
             .then((res) => res.rows),
 
@@ -70,7 +70,6 @@ module.exports = {
                 WHERE id = $2`,
             [bio, id]
         ),
-
     // friendship stuff
     checkFriendship: ({ sender, recipient }) =>
         db
@@ -137,7 +136,7 @@ module.exports = {
                 RETURNING code`,
                 [email, code]
             )
-            .then((res) => res.rows),
+            .then((res) => res.rows[0].code),
     getCode: (email) =>
         db
             .query(
