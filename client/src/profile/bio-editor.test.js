@@ -1,6 +1,6 @@
 import BioEditor from "./bio-editor";
 import { render, waitFor, fireEvent } from "@testing-library/react";
-import axios from "./utils/axios";
+import axios from "../utils/axios";
 
 jest.mock("./utils/axios");
 

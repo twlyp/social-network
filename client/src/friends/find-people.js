@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import axios from "./utils/axios";
+import axios from "../utils/axios";
 
 export default function findPeople() {
     const [query, setQuery] = useState("");

@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const { isLoggedIn, validate } = require("./middleware");
+const { isLoggedIn } = require("./middleware");
 const db = require("../utils/db");
 
 router.get("/user", isLoggedIn, async (req, res, next) => {
@@ -13,6 +13,8 @@ router.get("/user", isLoggedIn, async (req, res, next) => {
 });
 
 router.get("/user/:id.json", async (req, res, next) => {
+    if (req.session.userId == req.params.id)
+        return res.json({ success: false, error: "" });
     try {
         const user = await db.getUserProfile(req.params.id);
         return res.json({ success: true, user });

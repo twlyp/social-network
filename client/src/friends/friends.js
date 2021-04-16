@@ -1,14 +1,11 @@
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
-import * as actions from "./actions";
+import * as actions from "../redux/actions";
 
 export default function Friends() {
     const dispatch = useDispatch();
 
-    async function getFriendsWannabes() {
-        dispatch(actions.receiveFriendsWannabes());
-    }
-    useEffect(getFriendsWannabes, []);
+    useEffect(() => dispatch(actions.receiveFriendsWannabes()), []);
 
     const friends = useSelector(
         (state) =>
@@ -22,9 +19,9 @@ export default function Friends() {
             state.friendsList.filter((user) => !user.accepted)
     );
 
-    function clickHandler(action, id) {
-        if (action === "accept") return dispatch(actions.acceptFriend(id));
-        if (action === "delete") return dispatch(actions.unfriend(id));
+    function clickHandler(operation, id) {
+        if (operation === "accept") return dispatch(actions.acceptFriend(id));
+        if (operation === "delete") return dispatch(actions.unfriend(id));
     }
 
     function makeEntry(user) {
@@ -35,7 +32,7 @@ export default function Friends() {
                 </h5>
                 <img
                     className="thumbnail"
-                    src={user.url}
+                    src={user.image}
                     alt={`${user.first} ${user.last}'s profile picture'`}
                 />
                 <button

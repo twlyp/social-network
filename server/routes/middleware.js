@@ -1,5 +1,3 @@
-const db = require("../utils/db");
-
 const RE = {
     email: /.@./,
     password: /.{3,}/,

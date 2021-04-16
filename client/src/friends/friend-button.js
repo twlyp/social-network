@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
-import axios from "./utils/axios";
+import { useDispatch } from "react-redux";
+import * as actions from "../redux/actions";
+import axios from "../utils/axios";
 
-const actions = {
+const COMMANDS = {
     none: { tag: "ask", string: "Add friend" },
     friends: { tag: "delete", string: "End friendship" },
     waiting: { tag: "delete", string: "Cancel request" },
@@ -9,20 +11,23 @@ const actions = {
 };
 
 export default function FriendButton(props) {
-    const [error, setError] = useState("");
+    const dispatch = useDispatch();
     const [status, setStatus] = useState("none");
 
     async function getStatus() {
         const { data } = await axios.get(`/friendship/${props.target}`);
-        return data.success ? setStatus(data.status) : setError(data.error);
+        return data.success
+            ? setStatus(data.status)
+            : dispatch(actions.error(data.error));
     }
 
     async function clickHandler(e) {
-        setError("");
         const { data } = await axios.post(
-            `/friendship/${props.target}/${e.target.id}`
+            `/friendship/${props.target}/${e.target.name}`
         );
-        return data.success ? setStatus(data.status) : setError(data.error);
+        return data.success
+            ? setStatus(data.status)
+            : dispatch(actions.error(data.error));
     }
 
     useEffect(() => {
@@ -31,11 +36,11 @@ export default function FriendButton(props) {
 
     return (
         <>
-            <button onClick={clickHandler} id={actions[status].tag}>
-                {actions[status].string}
+            <button onClick={clickHandler} name={COMMANDS[status].tag}>
+                {COMMANDS[status].string}
             </button>
             {status === "open" && (
-                <button onClick={clickHandler} id="delete">
+                <button onClick={clickHandler} name="delete">
                     Reject request
                 </button>
             )}

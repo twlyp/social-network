@@ -15,11 +15,11 @@ router.post(
     s3.upload,
     async (req, res, next) => {
         try {
-            const url = await db.addProfilePic(
+            const image = await db.addProfilePic(
                 conf.AWS_BUCKET_URL + req.file.filename,
                 req.session.userId
             );
-            return res.json({ success: true, url });
+            return res.json({ success: true, image });
         } catch (err) {
             if (err instanceof TypeError)
                 return next({ myCode: "db_noupdate" });

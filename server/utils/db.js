@@ -25,7 +25,7 @@ module.exports = {
     getUserProfile: (id) =>
         db
             .query(
-                `SELECT id, first, last, profile_pic AS url, bio
+                `SELECT id, first, last, image, bio
                 FROM users WHERE id = $1`,
                 [id]
             )
@@ -57,12 +57,12 @@ module.exports = {
         db
             .query(
                 `UPDATE users
-                SET profile_pic = $1
+                SET image = $1
                 WHERE id = $2
-                RETURNING profile_pic AS url`,
+                RETURNING image`,
                 [url, id]
             )
-            .then((result) => result.rows[0].url),
+            .then((result) => result.rows[0].image),
     addBio: (bio, id) =>
         db.query(
             `UPDATE users
@@ -111,7 +111,7 @@ module.exports = {
     getFriends: (id) =>
         db
             .query(
-                `SELECT users.id, first, last, profile_pic AS url, accepted
+                `SELECT users.id, first, last, image, accepted
                     FROM friendships
                     JOIN users
                     ON (accepted = false AND recipient = $1 AND sender = users.id)

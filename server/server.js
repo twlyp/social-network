@@ -1,69 +1,36 @@
 const express = require("express");
-const compression = require("compression");
-const path = require("path");
-const cookieSession = require("cookie-session");
-const csurf = require("csurf");
+const app = express();
 
+const path = require("path");
 const {
     isLoggedIn,
     isLoggedOut,
     errorHandler,
 } = require("./routes/middleware");
 
-// ================================ INIT ================================ //
-const app = express();
-const server = require("http").Server(app);
-const io = require("socket.io")(server, {
-    allowRequest: (req, callback) =>
-        callback(null, req.headers.referer.startsWith("http://localhost:3000")),
+const cookieSession = require("cookie-session")({
+    secret:
+        process.env.SESSION_SECRET ||
+        "trentatré trentini entrarono a trento tutti e trentatré trotterellando",
+    maxAge: 1000 * 60 * 60 * 24 * 14,
 });
-
-// ================================ MORGAN ================================ //
-const morgan = require("morgan");
-app.use(morgan("tiny"));
-
 app.use(
-    compression(),
     express.urlencoded({
         extended: false,
     }),
     express.json(),
-    cookieSession({
-        secret: process.env.SESSION_SECRET || "whatever",
-        maxAge: 1000 * 60 * 60 * 24 * 14,
-    }),
-    csurf(),
+    express.static(path.join(__dirname, "..", "client", "public")),
+    cookieSession,
+    require("morgan")("tiny"),
+    require("compression")(),
+    require("csurf")(),
     (req, res, next) => {
         res.cookie("mytoken", req.csrfToken());
         return next();
-    },
-    express.static(path.join(__dirname, "..", "client", "index.html"))
+    }
 );
 
-// app.use(
-//     express.urlencoded({
-//         extended: false,
-//     })
-// );
-
-// app.use(express.json());
-
-// app.use(
-//     cookieSession({
-//         secret: process.env.SESSION_SECRET || "whatever",
-//         maxAge: 1000 * 60 * 60 * 24 * 14,
-//     })
-// );
-
-// app.use(csurf());
-// app.use(function (req, res, next) {
-//     res.cookie("mytoken", req.csrfToken());
-//     next();
-// });
-
-// app.use(express.static(path.join(__dirname, "..", "client", "index.html")));
-
-// ====================== ROUTES ====================== //
+// routes
 app.get("/welcome", isLoggedOut, (req, res) =>
     res.sendFile(path.join(__dirname, "..", "client", "index.html"))
 );
@@ -79,22 +46,34 @@ app.get("*", isLoggedIn, function (req, res) {
 
 app.use(errorHandler);
 
+// server for socket.io
+const server = require("http").Server(app);
+
 server.listen(process.env.PORT || 3001, function () {
     console.log("I'm listening.");
 });
 
-// io.on("connection", (socket) => {
-//     console.log(`A socket with the id ${socket.id} just CONNECTED`);
-//     socket.emit("welcome", {
-//         msg: "It is nice to see you.",
-//     });
-//     io.emit("newUser", {
-//         data: "a new user joined",
-//     });
-//     socket.on("yo", (data) => {
-//         console.log(data);
-//     });
-//     socket.on("disconnect", () => {
-//         console.log(`A socket with the id ${socket.id} just DISCONNECTED`);
-//     });
-// });
+module.exports = server;
+const io = require("./socket.io");
+
+io.use(function (socket, next) {
+    cookieSession(socket.request, socket.request.res, next);
+});
+
+io.on("connection", (socket) => {
+    console.log(`A socket with the id ${socket.id} just CONNECTED`);
+    if (!socket.request.session.userId) return socket.disconnect(true);
+
+    socket.emit("welcome", {
+        msg: "It is nice to see you.",
+    });
+    io.emit("newUser", {
+        data: "a new user joined",
+    });
+    socket.on("yo", (data) => {
+        console.log(data);
+    });
+    socket.on("disconnect", () => {
+        console.log(`A socket with the id ${socket.id} just DISCONNECTED`);
+    });
+});
