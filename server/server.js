@@ -26,7 +26,18 @@ app.use(
     compression(),
     express.urlencoded({
         extended: false,
-    })
+    }),
+    express.json(),
+    cookieSession({
+        secret: process.env.SESSION_SECRET || "whatever",
+        maxAge: 1000 * 60 * 60 * 24 * 14,
+    }),
+    csurf(),
+    (req, res, next) => {
+        res.cookie("mytoken", req.csrfToken());
+        return next();
+    },
+    express.static(path.join(__dirname, "..", "client", "index.html"))
 );
 
 // app.use(
@@ -35,22 +46,22 @@ app.use(
 //     })
 // );
 
-app.use(express.json());
+// app.use(express.json());
 
-app.use(
-    cookieSession({
-        secret: process.env.SESSION_SECRET || "whatever",
-        maxAge: 1000 * 60 * 60 * 24 * 14,
-    })
-);
+// app.use(
+//     cookieSession({
+//         secret: process.env.SESSION_SECRET || "whatever",
+//         maxAge: 1000 * 60 * 60 * 24 * 14,
+//     })
+// );
 
-app.use(csurf());
-app.use(function (req, res, next) {
-    res.cookie("mytoken", req.csrfToken());
-    next();
-});
+// app.use(csurf());
+// app.use(function (req, res, next) {
+//     res.cookie("mytoken", req.csrfToken());
+//     next();
+// });
 
-app.use(express.static(path.join(__dirname, "..", "client", "index.html")));
+// app.use(express.static(path.join(__dirname, "..", "client", "index.html")));
 
 // ====================== ROUTES ====================== //
 app.get("/welcome", isLoggedOut, (req, res) =>
