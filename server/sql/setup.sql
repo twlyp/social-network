@@ -28,3 +28,12 @@ CREATE TABLE friendships(
   recipient INT REFERENCES users(id) ON DELETE CASCADE NOT NULL, 
   accepted BOOLEAN DEFAULT false);
 
+  DROP TABLE IF EXISTS chat;
+
+  CREATE TABLE chat(
+      id SERIAL PRIMARY KEY,
+      text TEXT NOT NULL,
+      sender INT REFERENCES users(id) ON DELETE CASCADE NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  );
+

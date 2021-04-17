@@ -1,6 +1,6 @@
 import { useDispatch } from "react-redux";
 import usePicUpload from "../hooks/usePicUpload";
-import * as actions from "../redux/actions";
+import { toggleUploader } from "../redux/actions";
 
 export default function Uploader() {
     const dispatch = useDispatch();
@@ -9,7 +9,7 @@ export default function Uploader() {
     return (
         <div
             className="uploader modal"
-            onClick={() => dispatch(actions.toggleUploader())}
+            onClick={() => dispatch(toggleUploader())}
         >
             <div className="modal-message">
                 {inProgress ? (

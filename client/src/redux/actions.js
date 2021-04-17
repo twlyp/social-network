@@ -1,58 +1,31 @@
 import axios from "../utils/axios";
 
+const action = (str, payload) => ({ type: str, payload });
+
 export async function receiveFriendsWannabes() {
     const { data } = await axios.get("/friends-wannabes");
     return data.success
-        ? {
-              type: "RECEIVE_FRIENDS_WANNABES",
-              payload: data.friends,
-          }
-        : { type: "ERROR", error: data.error };
+        ? action("RECEIVE_FRIENDS_WANNABES", data.friends)
+        : error();
 }
 
 export async function acceptFriend(id) {
     const { data } = await axios.post(`/friendship/${id}/accept`);
-    return data.success
-        ? {
-              type: "ACCEPT_FRIEND",
-              id,
-          }
-        : { type: "ERROR", error: data.error };
+    return data.success ? action("ACCEPT_FRIEND", id) : error();
 }
 export async function unfriend(id) {
     const { data } = await axios.post(`/friendship/${id}/delete`);
-    return data.success
-        ? {
-              type: "UNFRIEND",
-              id,
-          }
-        : { type: "ERROR", error: data.error };
+    return data.success ? action("UNFRIEND", id) : error();
 }
-export async function toggleUploader() {
+export function toggleUploader() {
     return { type: "TOGGLE_UPLOADER" };
 }
 export async function getUserData() {
     const { data } = await axios.get("/user");
-    return data.success
-        ? {
-              type: "GET_DATA",
-              payload: data.user,
-          }
-        : { type: "ERROR", error: data.error };
+    return data.success ? action("GET_DATA", data.user) : error();
 }
-export async function setProfilePic(image) {
-    return {
-        type: "SET_PIC",
-        payload: image,
-    };
-}
-export async function setBio(bio) {
-    return {
-        type: "SET_BIO",
-        payload: bio,
-    };
-}
+export const setProfilePic = (image) => action("SET_PIC", image);
 
-export async function error(err) {
+export function error(err) {
     return { type: "ERROR", error: err };
 }

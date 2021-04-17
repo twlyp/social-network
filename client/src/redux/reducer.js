@@ -5,7 +5,7 @@ export default function (state = {}, action) {
         state = {
             ...state,
             friendsList: state.friendsList.map((user) => {
-                if (user.id === action.id) user.accepted = true;
+                if (user.id === action.payload) user.accepted = true;
                 return user;
             }),
         };
@@ -13,7 +13,7 @@ export default function (state = {}, action) {
         state = {
             ...state,
             friendsList: state.friendsList.filter(
-                (user) => user.id !== action.id
+                (user) => user.id !== action.payload
             ),
         };
     if (action.type === "TOGGLE_UPLOADER")
