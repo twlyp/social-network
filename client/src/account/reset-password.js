@@ -1,7 +1,7 @@
 import { useDispatch } from "react-redux";
 import axios from "../utils/axios";
 import useStatefulFields from "../hooks/useStatefulFields";
-import * as actions from "../redux/actions";
+import { error } from "../actions";
 
 import { useState } from "react";
 
@@ -15,7 +15,7 @@ export default function ResetPassword() {
             `/password/reset/${e.target.name}`,
             values
         );
-        if (!data.success) return dispatch(actions.error(data.error));
+        if (!data.success) return dispatch(error(data.error));
         setStep(step + 1);
     }
 

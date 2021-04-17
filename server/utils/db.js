@@ -150,4 +150,28 @@ module.exports = {
                 [email]
             )
             .then((result) => result.rows[0].code),
+
+    // chat stuff
+    getMessages: () =>
+        db
+            .query(
+                `SELECT chat.id, chat.sender, chat.text,
+                   TO_CHAR(chat.created_at, 'YYYY-MM-DD HH24:MI') AS time,
+                   users.first, users.last, users.image
+                FROM chat, users
+                WHERE chat.sender = users.id
+                ORDER BY chat.created_at DESC
+                LIMIT 10`
+            )
+            .then(({ rows }) => rows),
+    addMessage: ({ text, userId: sender }) =>
+        db
+            .query(
+                `INSERT INTO chat (text, sender)
+                VALUES ($1, $2)
+                RETURNING id, sender, text,
+                    TO_CHAR(created_at, 'YYYY-MM-DD HH24:MI') AS time`,
+                [text, sender]
+            )
+            .then(({ rows }) => rows[0]),
 };

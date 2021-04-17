@@ -2,7 +2,7 @@ import axios from "../utils/axios";
 
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import * as actions from "../redux/actions";
+import { error } from "../actions";
 
 import FriendButton from "../friends/friend-button";
 
@@ -15,7 +15,7 @@ export default function OtherProfile(props) {
     const getData = async () => {
         const { data } = await axios.get(`/user/${profileId}.json`);
         if (data.success) return setUser(data.user);
-        data.error && dispatch(actions.error(data.error));
+        data.error && dispatch(error(data.error));
         location.replace("/");
     };
 

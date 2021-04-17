@@ -1,5 +1,5 @@
 import { useDispatch } from "react-redux";
-import { toggleUploader } from "../redux/actions";
+import { toggleUploader } from "../actions";
 
 export default function ProfilePic(props) {
     const dispatch = useDispatch();

@@ -1,11 +1,11 @@
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
-import * as actions from "../redux/actions";
+import { receiveFriendsWannabes, acceptFriend, unfriend } from "../actions";
 
 export default function Friends() {
     const dispatch = useDispatch();
 
-    useEffect(() => dispatch(actions.receiveFriendsWannabes()), []);
+    useEffect(() => dispatch(receiveFriendsWannabes()), []);
 
     const friends = useSelector(
         (state) =>
@@ -20,8 +20,8 @@ export default function Friends() {
     );
 
     function clickHandler(operation, id) {
-        if (operation === "accept") return dispatch(actions.acceptFriend(id));
-        if (operation === "delete") return dispatch(actions.unfriend(id));
+        if (operation === "accept") return dispatch(acceptFriend(id));
+        if (operation === "delete") return dispatch(unfriend(id));
     }
 
     function makeEntry(user) {

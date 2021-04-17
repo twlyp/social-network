@@ -8,7 +8,8 @@ import { Provider } from "react-redux";
 import reduxPromise from "redux-promise";
 import { composeWithDevTools } from "redux-devtools-extension";
 
-import reducer from "./redux/reducer";
+import reducer from "./reducer";
+import { init } from "./socket";
 
 const store = createStore(
     reducer,
@@ -22,3 +23,5 @@ ReactDOM.render(
     </Provider>,
     document.querySelector("main")
 );
+
+init(store);

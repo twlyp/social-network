@@ -1,33 +1,48 @@
 export default function (state = {}, action) {
-    if (action.type === "RECEIVE_FRIENDS_WANNABES")
-        state = { ...state, friendsList: action.payload };
-    if (action.type === "ACCEPT_FRIEND")
+    const { type, payload } = action;
+
+    // friendships
+    if (type === "RECEIVE_FRIENDS_WANNABES")
+        state = { ...state, friendsList: payload };
+    if (type === "ACCEPT_FRIEND")
         state = {
             ...state,
             friendsList: state.friendsList.map((user) => {
-                if (user.id === action.payload) user.accepted = true;
+                if (user.id === payload) user.accepted = true;
                 return user;
             }),
         };
-    if (action.type === "UNFRIEND")
+    if (type === "UNFRIEND")
         state = {
             ...state,
             friendsList: state.friendsList.filter(
-                (user) => user.id !== action.payload
+                (user) => user.id !== payload
             ),
         };
-    if (action.type === "TOGGLE_UPLOADER")
+    // user data
+    if (type === "GET_DATA") state = { ...state, user: payload };
+    if (type === "TOGGLE_UPLOADER")
         state = { ...state, uploaderVisible: !state.uploaderVisible };
-    if (action.type === "GET_DATA") state = { ...state, user: action.payload };
-    if (action.type === "SET_PIC")
-        state = { ...state, user: { ...state.user, image: action.payload } };
-    if (action.type === "SET_BIO")
+    if (type === "SET_PIC")
+        state = { ...state, user: { ...state.user, image: payload } };
+    if (type === "SET_BIO")
         state = {
             ...state,
-            user: { ...state.user, bio: action.payload },
+            user: { ...state.user, bio: payload },
         };
 
-    if (action.type === "ERROR") state = { ...state, error: action.error };
+    //chat
+    if (type === "RECEIVE_CHAT_HISTORY")
+        state = { ...state, chatMessages: payload };
+    if (type === "ADD_MSG") {
+        state = state.chatMessages
+            ? { ...state, chatMessages: [payload, ...state.chatMessages] }
+            : { ...state, chatMessages: Array(payload) };
+    }
+
+    if (type === "ERROR")
+        //error handling
+        state = { ...state, error: action.error };
 
     return state;
 }

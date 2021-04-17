@@ -2,7 +2,7 @@ import useStatefulFields from "../hooks/useStatefulFields";
 import useAuthSubmit from "../hooks/useAuthSubmit";
 import { useDispatch, useSelector } from "react-redux";
 
-import * as actions from "../redux/actions";
+import { error } from "../actions";
 
 const NAMES = {
     first: "first name",
@@ -14,7 +14,7 @@ const NAMES = {
 export default function Registration() {
     const [values, handleChange, validity] = useStatefulFields("validate");
     const handleSubmit = useAuthSubmit("/register", values);
-    const error = useSelector((state) => state.error);
+    const errorState = useSelector((state) => state.error);
     const dispatch = useDispatch();
 
     const isValid = () => {
@@ -25,13 +25,11 @@ export default function Registration() {
         for (let key in validity) validity[key] || invalid.push(NAMES[key]);
 
         if (invalid.length > 0) {
-            dispatch(
-                actions.error(`Please enter valid ${invalid.join(", ")}.`)
-            );
+            dispatch(error(`Please enter valid ${invalid.join(", ")}.`));
             return false;
         }
 
-        error && dispatch(actions.error(""));
+        errorState && dispatch(error(""));
         return true;
     };
 

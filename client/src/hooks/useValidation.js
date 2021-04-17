@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import * as actions from "../actions";
+import { error } from "../actions";
 
 const NAMES = {
     first: "first name",
@@ -12,18 +12,18 @@ const NAMES = {
 
 export default function useValidation(validity, required) {
     const [isValid, setValid] = useState(true);
-    const error = useSelector((state) => state.error);
+    const errorState = useSelector((state) => state.error);
     const dispatch = useDispatch();
 
     let invalid = [];
     required.forEach((r) => validity[r] || invalid.push(NAMES[r]));
 
     if (invalid.length > 0) {
-        dispatch(actions.error(`Please enter valid ${invalid.join(", ")}.`));
+        dispatch(error(`Please enter valid ${invalid.join(", ")}.`));
         return setValid(false);
     }
 
-    error && dispatch(actions.error(""));
+    errorState && dispatch(error(""));
 
     return isValid;
 }

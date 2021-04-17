@@ -1,6 +1,6 @@
 import { useDispatch } from "react-redux";
 import usePicUpload from "../hooks/usePicUpload";
-import { toggleUploader } from "../redux/actions";
+import { toggleUploader } from "../actions";
 
 export default function Uploader() {
     const dispatch = useDispatch();

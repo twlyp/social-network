@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import * as actions from "../redux/actions";
+import { error } from "../actions";
 import axios from "../utils/axios";
 
 const COMMANDS = {
@@ -18,7 +18,7 @@ export default function FriendButton(props) {
         const { data } = await axios.get(`/friendship/${props.target}`);
         return data.success
             ? setStatus(data.status)
-            : dispatch(actions.error(data.error));
+            : dispatch(error(data.error));
     }
 
     async function clickHandler(e) {
@@ -27,7 +27,7 @@ export default function FriendButton(props) {
         );
         return data.success
             ? setStatus(data.status)
-            : dispatch(actions.error(data.error));
+            : dispatch(error(data.error));
     }
 
     useEffect(() => {

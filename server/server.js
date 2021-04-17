@@ -53,27 +53,5 @@ server.listen(process.env.PORT || 3001, function () {
     console.log("I'm listening.");
 });
 
-module.exports = server;
-const io = require("./socket.io");
-
-io.use(function (socket, next) {
-    cookieSession(socket.request, socket.request.res, next);
-});
-
-io.on("connection", (socket) => {
-    console.log(`A socket with the id ${socket.id} just CONNECTED`);
-    if (!socket.request.session.userId) return socket.disconnect(true);
-
-    socket.emit("welcome", {
-        msg: "It is nice to see you.",
-    });
-    io.emit("newUser", {
-        data: "a new user joined",
-    });
-    socket.on("yo", (data) => {
-        console.log(data);
-    });
-    socket.on("disconnect", () => {
-        console.log(`A socket with the id ${socket.id} just DISCONNECTED`);
-    });
-});
+const init = require("./socket");
+init(server, cookieSession);

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import * as actions from "../redux/actions";
+import { setBio } from "../actions";
 
 export default function BioEditor(props) {
     const [isEditing, setEditing] = useState(false);
@@ -8,7 +8,7 @@ export default function BioEditor(props) {
     const dispatch = useDispatch();
 
     function save() {
-        dispatch(actions.setBio(draft));
+        dispatch(setBio(draft));
         setEditing(false);
     }
 
