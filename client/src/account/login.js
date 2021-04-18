@@ -12,16 +12,19 @@ const NAMES = {
 };
 
 export default function Login() {
-    const [values, handleChange, validity] = useStatefulFields("validate");
+    const [values, handleChange, validity, keyCheck] = useStatefulFields({
+        withValidation: true,
+        enterSubmits: true,
+    });
     const errorState = useSelector((state) => state.error);
     const dispatch = useDispatch();
     const handleSubmit = useAuthSubmit("/login", values);
 
     const isValid = () => {
-        if (!(values.email && values.password)) return false;
+        const required = ["email", "password"];
 
         let invalid = [];
-        for (let key in validity) validity[key] || invalid.push(NAMES[key]);
+        for (let key of required) validity[key] || invalid.push(NAMES[key]);
 
         if (invalid.length > 0) {
             dispatch(error(`Please enter valid ${invalid.join(", ")}.`));
@@ -32,24 +35,34 @@ export default function Login() {
         return true;
     };
 
-    return (
-        <div>
-            <h1>This is our login component</h1>
+    const formClass = (field) =>
+        "form-field " + (validity[field] ? "" : "invalid");
 
-            <input
-                type="text"
-                name="email"
-                placeholder="email"
-                onChange={handleChange}
-            />
-            <input
-                type="password"
-                name="password"
-                placeholder="password"
-                onChange={handleChange}
-            />
-            <button onClick={(e) => isValid() && handleSubmit(e)}>
-                Log in
+    return (
+        <div className="auth-page">
+            <div className="form">
+                <input
+                    className={formClass("email")}
+                    type="text"
+                    name="email"
+                    placeholder="email"
+                    onChange={handleChange}
+                    onKeyDown={(e) => isValid() && keyCheck(e, handleSubmit)}
+                />
+                <input
+                    className={formClass("password")}
+                    type="password"
+                    name="password"
+                    placeholder="password"
+                    onChange={handleChange}
+                    onKeyDown={(e) => isValid() && keyCheck(e, handleSubmit)}
+                />
+            </div>
+            <button
+                className="form-field"
+                onClick={(e) => isValid() && handleSubmit(e)}
+            >
+                log in
             </button>
         </div>
     );

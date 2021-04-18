@@ -14,7 +14,7 @@ module.exports = function (server, cookieSession) {
     });
 
     io.on("connection", async (socket) => {
-        console.log(`A socket with the id ${socket.id} just CONNECTED`);
+        // console.log(`A socket with the id ${socket.id} just CONNECTED`);
         if (!socket.request.session.userId) return socket.disconnect(true);
 
         const msgs = await db.getMessages();
@@ -34,8 +34,8 @@ module.exports = function (server, cookieSession) {
             });
         });
 
-        socket.on("disconnect", () => {
-            console.log(`A socket with the id ${socket.id} just DISCONNECTED`);
-        });
+        // socket.on("disconnect", () => {
+        //     console.log(`A socket with the id ${socket.id} just DISCONNECTED`);
+        // });
     });
 };

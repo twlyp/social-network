@@ -8,21 +8,27 @@ export default function Welcome() {
         <div id="welcome">
             <h1>Welcome!</h1>
             <HashRouter>
-                <div>
-                    <Route exact path="/">
-                        <Registration />
-                        <Link to="/login">Log in instead</Link>
-                    </Route>
-                    <Route path="/login">
-                        <Login />
-                        <Link to="/reset">Forgot your password?</Link>
-                        <Link to="/">Register instead</Link>
-                    </Route>
-                    <Route path="/reset">
-                        <ResetPassword />
-                        <Link to="/login">Log in</Link>
-                    </Route>
-                </div>
+                <Route exact path="/">
+                    <Registration />
+                    <Link className="form-link" to="/login">
+                        Log in instead
+                    </Link>
+                </Route>
+                <Route path="/login">
+                    <Login />
+                    <Link className="form-link" to="/reset">
+                        Forgot your password?
+                    </Link>
+                    <Link className="form-link" to="/">
+                        Register instead
+                    </Link>
+                </Route>
+                <Route path="/reset">
+                    <ResetPassword />
+                    <Link className="form-link" to="/login">
+                        Log in
+                    </Link>
+                </Route>
             </HashRouter>
         </div>
     );

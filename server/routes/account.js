@@ -33,19 +33,12 @@ router.post(
     validate.email,
     validate.password,
     async (req, res, next) => {
-        try {
-            const user = await db.getUserByEmail(req.body.email);
-            const match = await bcrypt.compare(
-                req.body.password,
-                user.password
-            );
-            if (!match) throw new TypeError("wrong password");
-            req.session.userId = user.id;
-            return res.json({ success: true });
-        } catch (err) {
-            if (err instanceof TypeError) return next({ myCode: "bad_login" });
-            return next(err);
-        }
+        const user = await db.getUserByEmail(req.body.email);
+        if (!user) return next({ myCode: "bad_login" });
+        const match = await bcrypt.compare(req.body.password, user.password);
+        if (!match) return next({ myCode: "bad_login" });
+        req.session.userId = user.id;
+        return res.json({ success: true });
     }
 );
 
@@ -55,12 +48,8 @@ router.post("/logout", (req, res) => {
 });
 
 router.post("/password/reset/start", validate.email, async (req, res, next) => {
-    try {
-        await db.getUserByEmail(req.body.email);
-    } catch (err) {
-        if (err instanceof TypeError) return next({ myCode: "bad_email" });
-        return next(err);
-    }
+    const user = await db.getUserByEmail(req.body.email);
+    if (!user) return next({ myCode: "bad_email" });
     try {
         const code = await db.addCode(req.body.email, crs.getCode());
         await ses.sendEmail(req.body.email, code, "Your verification code");

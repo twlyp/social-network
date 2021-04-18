@@ -27,40 +27,45 @@ export default function Friends() {
     function makeEntry(user) {
         return (
             <li key={user.id}>
-                <h5>
-                    {user.first} {user.last}
-                </h5>
                 <img
                     className="thumbnail"
                     src={user.image}
                     alt={`${user.first} ${user.last}'s profile picture'`}
                 />
-                <button
-                    name={user.accepted ? "delete" : "accept"}
-                    onClick={(e) => clickHandler(e.target.name, user.id)}
-                >
-                    {user.accepted ? "Remove" : "Accept"}
-                </button>
-                {!user.accepted && (
+
+                <span className="name">
+                    {user.first} {user.last}
+                </span>
+                <div className="button-row">
                     <button
-                        name="delete"
+                        name={user.accepted ? "delete" : "accept"}
                         onClick={(e) => clickHandler(e.target.name, user.id)}
                     >
-                        Reject
+                        {user.accepted ? "👢" : "📯"}
                     </button>
-                )}
+                    {!user.accepted && (
+                        <button
+                            name="delete"
+                            onClick={(e) =>
+                                clickHandler(e.target.name, user.id)
+                            }
+                        >
+                            👢
+                        </button>
+                    )}
+                </div>
             </li>
         );
     }
 
     return (
         <div className="friends-page">
-            <h2>Your friends:</h2>
+            <h2>squirrel friends 🐿</h2>
             <ul className="friends-list">
                 {friends && friends.map((user) => makeEntry(user))}
             </ul>
-            <h2>The wannabes:</h2>
-            <ul className="wannabes-list">
+            <h2>toot 📯 or boot? 👢</h2>
+            <ul className="friends-list">
                 {wannabes && wannabes.map((user) => makeEntry(user))}
             </ul>
         </div>

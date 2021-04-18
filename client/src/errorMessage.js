@@ -1,6 +1,17 @@
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { error } from "./actions";
 
 export default function ErrorMessage() {
-    const error = useSelector((state) => state.error);
-    return <>{error && <div className="error">{error}</div>}</>;
+    const dispatch = useDispatch();
+    const errorState = useSelector((state) => state.error);
+    return (
+        <>
+            {" "}
+            {errorState && (
+                <div className="error-box" onClick={() => dispatch(error(""))}>
+                    <h3>{errorState}</h3>
+                </div>
+            )}
+        </>
+    );
 }

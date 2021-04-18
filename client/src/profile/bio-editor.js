@@ -18,6 +18,8 @@ export default function BioEditor(props) {
             {isEditing ? (
                 <>
                     <textarea
+                        cols="30"
+                        rows="3"
                         onInput={(e) => setDraft(e.target.value)}
                         defaultValue={props.bio}
                     ></textarea>
@@ -27,10 +29,14 @@ export default function BioEditor(props) {
                 </>
             ) : (
                 <>
-                    <p className="bio-text">
-                        {props.bio || "Tell us something about yourself!"}
-                    </p>
-                    <button onClick={() => setEditing(true)} name="edit">
+                    <p>{props.bio || "Tell us something about yourself!"}</p>
+                    <button
+                        onClick={() => {
+                            setEditing(true);
+                            setDraft(props.bio);
+                        }}
+                        name="edit"
+                    >
                         {props.bio ? "Edit" : "Add"}
                     </button>
                 </>

@@ -1,3 +1,17 @@
+* {
+    box-sizing: border-box;
+    font-family: "Open Sans", sans-serif;
+    --red: #7b113a;
+    --redN: 123, 17, 58;
+    --violet: #150e56;
+    --violetN: 21, 14, 86;
+    --blue: #1597bb;
+    --blueN: 21, 151, 187;
+    --azure: #8fd6e1;
+    --azureN: 143, 214, 225;
+    --darkness: #02040f88;
+}
+
 body {
     background-color: ghostwhite;
 }
@@ -11,9 +25,315 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    background: #00000fdd;
+    background: var(--darkness);
 }
 
 .modal-message {
     background: ghostwhite;
+}
+
+#welcome {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.auth-page {
+    margin: 1rem 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.form {
+    width: 400px;
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.form::before {
+    content: "";
+    width: 400px;
+    height: 400px;
+    background: linear-gradient(
+        to top,
+        rgba(var(--violetN), 0.2),
+        rgba(var(--violetN), 1)
+    );
+    mask: radial-gradient(
+        circle closest-side,
+        #ffffffff,
+        #ffffffff 50%,
+        #ffffff55 80%,
+        #ffffff22 90%,
+        #ffffff00
+    );
+    position: absolute;
+    z-index: -2;
+}
+
+.form-field {
+    font-size: 1.5rem;
+
+    border: 1px solid var(--azure);
+    border-radius: 1rem;
+    box-shadow: inset 0px 0px 2px 1px var(--azure), 0px 0px 5px 3px var(--azure),
+        4px 4px 20px 2px var(--violet);
+}
+
+.form input {
+    height: 2rem;
+    text-align: center;
+    margin: 0.8rem 0;
+    width: 100%;
+}
+
+input.invalid {
+    border: none;
+    box-shadow: inset 0px 0px 2px 1px var(--red), 0px 0px 5px 3px var(--red),
+        4px 4px 20px 2px var(--violet);
+}
+
+button {
+    margin: 1rem 0;
+    height: 2.5rem;
+    padding: 0;
+    background: none;
+}
+
+.auth-page button {
+    width: 200px;
+}
+
+button:hover {
+    transform: scale(1.1);
+}
+
+.auth-page button:active {
+    transform: translate(2px, 2px);
+    box-shadow: inset 0px 0px 5px 2px var(--azure), 0px 0px 5px 3px var(--azure),
+        2px 2px 20px 2px var(--violet);
+    background: radial-gradient(
+        rgba(var(--azureN), 0),
+        rgba(var(--azureN), 0.2)
+    );
+}
+
+.form-link {
+    color: var(--violet);
+    font-size: 1.5rem;
+    margin: 1rem 0;
+}
+
+.form-link:hover {
+    transform: scale(1.1);
+}
+
+p {
+    margin: 0.5rem;
+    text-align: center;
+}
+
+h1,
+h2,
+h3 {
+    color: var(--violet);
+    margin: 1rem 0;
+}
+
+h1 {
+    text-align: center;
+    font-size: 3.5rem;
+}
+
+h2 {
+    font-size: 2rem;
+}
+
+h3 {
+    font-size: 1.5rem;
+    margin: 0 0 0.6rem 0;
+}
+
+/* reset password */
+.done-reset {
+    text-align: center;
+    background: var(--darkness);
+    padding: 1rem;
+    border-radius: 1rem;
+    color: var(--azure);
+}
+
+/* error */
+.error-box {
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    animation: slideInFromTop 0.3s ease-out;
+    background-color: rgba(var(--redN), 0.95);
+    text-align: center;
+    color: ghostwhite;
+}
+
+.error-box h3 {
+    color: ghostwhite;
+}
+
+@keyframes slideInFromTop {
+    0% {
+        transform: translateY(-100%);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
+/* profile */
+.profile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.profile-pic {
+    width: 200px;
+    height: 200px;
+    margin: 2rem;
+    text-align: center;
+}
+
+.profile-pic img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    position: relative;
+}
+
+.profile-pic::before {
+    content: "";
+    width: 270px;
+    height: 270px;
+    position: absolute;
+    transform: translate(-35px, -35px);
+    z-index: -1;
+    background: radial-gradient(
+        circle closest-side,
+        rgba(var(--blueN), 0.7) 70%,
+        rgba(var(--blueN), 0)
+    );
+}
+
+.bio {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 400px;
+    border: 2px solid var(--blue);
+    border-radius: 1rem;
+    padding: 1rem;
+    box-shadow: inset 0px 0px 5px 5px rgba(var(--blueN), 0.7),
+        inset 0px 0px 7px 7px #33333333;
+    margin: 1rem;
+}
+
+.bio p {
+    font-size: 1.2rem;
+}
+
+.bio button {
+    min-width: 75px;
+    border-radius: 1rem;
+}
+
+textarea {
+    font-size: 1.2rem;
+}
+
+.friend-btn {
+    /* TODO */
+}
+
+nav {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    background: var(--violet);
+}
+
+nav * {
+    font-size: 1.3rem;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    margin: 0;
+    color: ghostwhite;
+    font-weight: bold;
+}
+
+nav a:hover {
+    transform: scale(1.1);
+}
+
+nav a:visited {
+    color: ghostwhite;
+}
+
+.thumbnail {
+    width: 100px;
+    height: 100px;
+    margin: 12.5px 25px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.friends-list li {
+    width: 400px;
+    height: 125px;
+    position: relative;
+    border: 2px solid hotpink;
+    border-radius: 1rem;
+    margin: 0.2rem;
+}
+
+.friends-list .name {
+    font-size: 1.3rem;
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    text-align: start;
+}
+
+.button-row {
+    width: 200px;
+    position: absolute;
+    bottom: 20px;
+    right: 0;
+}
+
+.friends-list button {
+    margin: 0;
+    width: 50px;
+    margin: 0 4px;
+    border-radius: 1rem;
+}
+
+.friends-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }

@@ -7,9 +7,19 @@ const RE = {
     password: /.{3,}/,
 };
 
-export default function useStatefulFields(withValidation = false) {
+export default function useStatefulFields({
+    withValidation = false,
+    enterSubmits = false,
+}) {
     const [values, setValues] = useState({});
     const [validity, setValidity] = useState({});
+
+    const keyCheck = (e, callback) => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            return callback(e);
+        }
+    };
 
     const handleChange = (e) => {
         const name = e.target.name;
@@ -26,5 +36,10 @@ export default function useStatefulFields(withValidation = false) {
             });
         }
     };
-    return [values, handleChange, validity];
+
+    let output = [values, handleChange];
+    withValidation && output.push(validity);
+    enterSubmits && output.push(keyCheck);
+
+    return output;
 }

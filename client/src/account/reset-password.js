@@ -6,8 +6,8 @@ import { error } from "../actions";
 import { useState } from "react";
 
 export default function ResetPassword() {
-    const [step, setStep] = useState(1);
-    const [values, handleChange] = useStatefulFields();
+    const [step, setStep] = useState(3);
+    const [values, handleChange] = useStatefulFields({});
     const dispatch = useDispatch();
 
     async function handleClick(e) {
@@ -20,42 +20,65 @@ export default function ResetPassword() {
     }
 
     return (
-        <div>
-            <h1>Password reset</h1>
-
+        <div className="auth-page">
             {step === 1 && (
-                <div>
-                    <input
-                        type="text"
-                        name="email"
-                        placeholder="email"
-                        onChange={handleChange}
-                    />
-                    <button name="start" onClick={handleClick}>
+                <>
+                    <div className="form">
+                        {
+                            <input
+                                className="form-field"
+                                type="text"
+                                name="email"
+                                placeholder="email"
+                                onChange={handleChange}
+                            />
+                        }
+                    </div>
+                    <button
+                        className="form-field"
+                        name="start"
+                        onClick={handleClick}
+                    >
                         Reset password
                     </button>
-                </div>
+                </>
             )}
 
             {step === 2 && (
-                <div>
-                    <input
-                        type="text"
-                        name="code"
-                        placeholder="code"
-                        onChange={handleChange}
-                    />
-                    <input
-                        type="password"
-                        name="password"
-                        placeholder="new password"
-                        onChange={handleChange}
-                    />
-                    <button onClick={handleClick}>Confirm reset</button>
-                </div>
+                <>
+                    <div className="form">
+                        <input
+                            className="form-field"
+                            type="text"
+                            name="code"
+                            placeholder="code"
+                            onChange={handleChange}
+                        />
+                        <input
+                            className="form-field"
+                            type="password"
+                            name="password"
+                            placeholder="new password"
+                            onChange={handleChange}
+                        />
+                    </div>
+                    <button
+                        className="form-field"
+                        name="verify"
+                        onClick={handleClick}
+                    >
+                        Confirm reset
+                    </button>
+                </>
             )}
 
-            {step === 3 && <div>All done! You can use your new password.</div>}
+            {step === 3 && (
+                <div className="form">
+                    <h2 className="done-reset">
+                        All done! You can use your new password.
+                    </h2>
+                </div>
+            )}
         </div>
     );
 }

@@ -28,14 +28,15 @@ export default function OtherProfile(props) {
             <h2 className="name">
                 {user.first} {user.last}
             </h2>
-            <img
-                className="profile-pic"
-                src={user.image || "/silhouette2.jpg"}
-                alt={`${user.first} ${user.last}'s profile pic`}
-            />
+            <div className="profile-pic">
+                <img
+                    src={user.image || "/silhouette2.jpg"}
+                    alt={`${user.first} ${user.last}'s profile pic`}
+                />
+            </div>
             <div className="bio">
                 <h3>They say about themselves:</h3>
-                <p className="bio-text">{user.bio}</p>
+                <p>{user.bio}</p>
             </div>
             <FriendButton target={profileId} />
         </div>

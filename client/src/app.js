@@ -29,12 +29,12 @@ export default function App() {
             <Logo />
             <Router>
                 <FindPeople />
-
-                <Link to="/">Profile</Link>
-                <Link to="/friends">Friends</Link>
-                <Link to="/chat">Chat</Link>
-
-                <button onClick={logout}>Logout</button>
+                <nav>
+                    <Link to="/">Profile</Link>
+                    <Link to="/friends">Friends</Link>
+                    <Link to="/chat">Chat</Link>
+                    <button onClick={logout}>Logout</button>
+                </nav>
 
                 <div className="profile">
                     <Route exact path="/" component={Profile} />

@@ -21,7 +21,7 @@ module.exports = {
                 WHERE email = $1`,
                 [email]
             )
-            .then((res) => res.rows[0]),
+            .then(({ rows }) => rows[0]),
     getUserProfile: (id) =>
         db
             .query(

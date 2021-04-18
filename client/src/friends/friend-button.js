@@ -36,11 +36,19 @@ export default function FriendButton(props) {
 
     return (
         <>
-            <button onClick={clickHandler} name={COMMANDS[status].tag}>
+            <button
+                className="friend-btn"
+                onClick={clickHandler}
+                name={COMMANDS[status].tag}
+            >
                 {COMMANDS[status].string}
             </button>
             {status === "open" && (
-                <button onClick={clickHandler} name="delete">
+                <button
+                    className="friend-btn"
+                    onClick={clickHandler}
+                    name="delete"
+                >
                     Reject request
                 </button>
             )}
