@@ -13,7 +13,7 @@ export default function BioEditor(props) {
     }
 
     return (
-        <div className="bio">
+        <div className="bio inset-card">
             <h3>Your bio:</h3>
             {isEditing ? (
                 <>

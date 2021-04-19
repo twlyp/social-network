@@ -6,7 +6,7 @@ import { error } from "../actions";
 import { useState } from "react";
 
 export default function ResetPassword() {
-    const [step, setStep] = useState(3);
+    const [step, setStep] = useState(1);
     const [values, handleChange] = useStatefulFields({});
     const dispatch = useDispatch();
 
@@ -39,7 +39,7 @@ export default function ResetPassword() {
                         name="start"
                         onClick={handleClick}
                     >
-                        Reset password
+                        Reset
                     </button>
                 </>
             )}

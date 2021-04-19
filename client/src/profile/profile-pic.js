@@ -7,7 +7,7 @@ export default function ProfilePic(props) {
         <div className="profile-pic">
             <img
                 onClick={() => dispatch(toggleUploader())}
-                src={props.image || "silhouette2.jpg"}
+                src={props.image || "silhouette.jpg"}
                 alt={`${props.first} ${props.last}'s profile picture`}
             />
         </div>

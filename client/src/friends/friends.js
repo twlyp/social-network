@@ -26,7 +26,7 @@ export default function Friends() {
 
     function makeEntry(user) {
         return (
-            <li key={user.id}>
+            <li key={user.id} className="inset-card">
                 <img
                     className="thumbnail"
                     src={user.image}

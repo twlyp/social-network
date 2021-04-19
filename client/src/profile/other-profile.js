@@ -30,7 +30,7 @@ export default function OtherProfile(props) {
             </h2>
             <div className="profile-pic">
                 <img
-                    src={user.image || "/silhouette2.jpg"}
+                    src={user.image || "/silhouette.jpg"}
                     alt={`${user.first} ${user.last}'s profile pic`}
                 />
             </div>

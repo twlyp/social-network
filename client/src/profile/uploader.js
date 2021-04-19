@@ -11,7 +11,7 @@ export default function Uploader() {
             className="uploader modal"
             onClick={() => dispatch(toggleUploader())}
         >
-            <div className="modal-message">
+            <div className="modal-message inset-card">
                 {inProgress ? (
                     <p>Uploading...</p>
                 ) : (

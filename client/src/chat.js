@@ -26,27 +26,30 @@ export default function Chat() {
 
     return (
         <div id="chat">
-            <h3>Welcome to Chat</h3>
             <ul className="chat-messages-container" ref={elemRef}>
                 {[...chatMessages].reverse().map((msg) => (
-                    <li key={msg.id}>
-                        <p>
-                            [{msg.time}]{" "}
-                            <span className="username">
-                                {msg.first} {msg.last}:
-                            </span>{" "}
-                            {msg.text}
-                        </p>
+                    <li className="inset-card" key={msg.id}>
+                        <div>
+                            <img src={msg.image} />
+                        </div>
+                        <div className="msg-body">
+                            <p>{msg.text}</p>
+                            <div>
+                                {msg.first} {msg.last} on {msg.time}
+                            </div>
+                        </div>
                     </li>
                 ))}
             </ul>
-            <textarea
-                placeholder="Add your message here"
-                onKeyDown={keyCheck}
-                onChange={(e) => setText(e.target.value)}
-                value={text}
-            ></textarea>
-            <button onClick={send}>Send</button>
+            <div className="msg-composer">
+                <textarea
+                    placeholder="Add your message here"
+                    onKeyDown={keyCheck}
+                    onChange={(e) => setText(e.target.value)}
+                    value={text}
+                ></textarea>
+                <button onClick={send}>🗣</button>
+            </div>
         </div>
     );
 }

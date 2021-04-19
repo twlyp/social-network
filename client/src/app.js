@@ -26,9 +26,11 @@ export default function App() {
 
     return (
         <section id="app">
-            <Logo />
             <Router>
-                <FindPeople />
+                <header>
+                    <Logo />
+                    <FindPeople />
+                </header>
                 <nav>
                     <Link to="/">Profile</Link>
                     <Link to="/friends">Friends</Link>
