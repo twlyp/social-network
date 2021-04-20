@@ -22,6 +22,7 @@ export default function Logo() {
         top: "50%",
         left: "50%",
         transform: "translate(-50%,-50%)",
+        fontFamily: "Montserrat, sans-serif",
     };
 
     return (

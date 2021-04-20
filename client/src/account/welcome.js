@@ -2,11 +2,16 @@ import { HashRouter, Route, Link } from "react-router-dom";
 import Registration from "./registration";
 import Login from "./login";
 import ResetPassword from "./reset-password";
+import Sketch from "./sketch";
 
 export default function Welcome() {
     return (
         <div id="welcome">
-            <h1>Welcome!</h1>
+            <Sketch />
+            <div className="headline">
+                <h1>KIKI</h1>
+                <h4>connect with local drag queens</h4>
+            </div>
             <HashRouter>
                 <Route exact path="/">
                     <Registration />

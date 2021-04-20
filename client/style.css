@@ -11,11 +11,11 @@
     --azureN: 143, 214, 225;
     --darkness: #02040f88;
     --grey: #33333333;
-    --white: ghostwhite;
+    --white: rgb(248, 248, 255);
 }
 
 body {
-    background-color: ghostwhite;
+    background-color: var(--white);
 }
 
 .modal {
@@ -31,7 +31,7 @@ body {
 }
 
 .modal-message {
-    background: ghostwhite;
+    background: var(--white);
     min-width: 400px;
     min-height: 200px;
     font-size: 1.5rem;
@@ -85,6 +85,7 @@ body {
     );
     position: absolute;
     z-index: -2;
+    border-radius: 50%;
 }
 
 .inset-card {
@@ -110,8 +111,8 @@ body {
 
 input.invalid {
     background: radial-gradient(
-        ghostwhite,
-        ghostwhite 50%,
+        var(--white),
+        var(--white) 50%,
         rgba(var(--redN), 0.4)
     );
 }
@@ -158,9 +159,11 @@ p {
 
 h1,
 h2,
-h3 {
+h3,
+h4 {
     color: var(--violet);
     margin: 1rem 0;
+    font-family: Montserrat, sans-serif;
 }
 
 h1 {
@@ -175,6 +178,17 @@ h2 {
 h3 {
     font-size: 1.5rem;
     margin: 0 0 0.6rem 0;
+}
+
+.headline {
+    position: absolute;
+    top: 280px;
+    left: 50%;
+    transform: translate(-50%, 0%);
+}
+
+canvas {
+    z-index: -3;
 }
 
 /* reset password */
@@ -195,11 +209,11 @@ h3 {
     animation: slideInFromTop 0.3s ease-out;
     background-color: rgba(var(--redN), 0.95);
     text-align: center;
-    color: ghostwhite;
+    color: var(--white);
 }
 
 .error-box h3 {
-    color: ghostwhite;
+    color: var(--white);
 }
 
 @keyframes slideInFromTop {
@@ -301,7 +315,7 @@ nav * {
     cursor: pointer;
     border: none;
     margin: 0;
-    color: ghostwhite;
+    color: var(--white);
     font-weight: bold;
 }
 
@@ -310,7 +324,7 @@ nav a:hover {
 }
 
 nav a:visited {
-    color: ghostwhite;
+    color: var(--white);
 }
 
 /* friends list */
