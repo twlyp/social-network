@@ -96,7 +96,6 @@ body {
 
 .form-field {
     font-size: 1.5rem;
-
     border: none;
     border-radius: 1rem;
     box-shadow: inset 0px 0px 5px 5px #33333333;
@@ -408,6 +407,7 @@ ul {
     width: 50px;
     height: 50px;
     border-radius: 50%;
+    object-fit: cover;
 }
 
 .msg-body {
