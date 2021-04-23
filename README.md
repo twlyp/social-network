@@ -4,4 +4,4 @@ This is the third project I completed during the coding bootcamp I attended in Q
 
 Back end: Node, Express, Socket.io, PostgreSQL
 
-Front end: React, React-Redux
+Front end: React, Redux
