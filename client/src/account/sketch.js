@@ -1,6 +1,5 @@
 // import { paper, view, Point, Color, Group, Matrix, Path, project } from "paper";
-import { View, Layer, Rectangle } from "react-paper-bindings";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef } from "react";
 
 const GR = 1.61803;
 const R = 80;
